@@ -24,13 +24,24 @@ export const History: React.FC = () => {
 
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    // In a real app, deleteRecord should probably return a promise
-    deleteRecord(id);
-    // Wait a bit for DB update or optimistically update UI
-    const updated = records.filter(r => r.id !== id);
-    setRecords(updated);
-    // Optionally reload to ensure sync
-    // await loadData();
+    try {
+      const success = await deleteRecord(id);
+      if (success) {
+        // Optimistically update UI
+        const updated = records.filter(r => r.id !== id);
+        setRecords(updated);
+        // Reload to ensure sync with backend
+        await loadData();
+      } else {
+        console.error('Failed to delete record');
+        // Reload to sync with backend state
+        await loadData();
+      }
+    } catch (error) {
+      console.error('Error deleting record:', error);
+      // Reload to sync with backend state
+      await loadData();
+    }
   };
 
   const filteredRecords = records.filter(r => 
@@ -48,7 +59,7 @@ export const History: React.FC = () => {
       <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-6">
         <div>
           <h1 className="text-3xl font-extrabold text-slate-900">Translation History</h1>
-          <p className="text-slate-500 mt-2">Access your saved sequences and AI insights.</p>
+          <p className="text-slate-500 mt-2">Access your saved sequences and translation history.</p>
         </div>
         
         <div className="relative w-full md:w-80">
