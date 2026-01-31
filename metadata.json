@@ -1,0 +1,5 @@
+{
+  "name": "BioTranscribe",
+  "description": "A comprehensive RNA Transcription & Protein Translation system. Convert DNA/RNA sequences to amino acids, visualize codons, and analyze protein properties using AI.",
+  "requestFramePermissions": []
+}
