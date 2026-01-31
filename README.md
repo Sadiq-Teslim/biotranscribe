@@ -27,9 +27,6 @@ An intelligent web application for the Central Dogma of molecular biology. Conve
 - **MySQL/TiDB** for persistent data storage
 - **Flask-CORS** for cross-origin resource sharing
 
-### AI Integration
-- **Google Gemini API** for protein analysis
-
 ## Prerequisites
 
 - **Node.js** (v18 or higher)
@@ -50,12 +47,6 @@ cd biotranscribe
 ```bash
 # Install dependencies
 npm install
-
-# Create environment file
-cp .env.example .env.local
-
-# Edit .env.local and add your Gemini API key
-# GEMINI_API_KEY=your_api_key_here
 ```
 
 ### 3. Backend Setup
@@ -139,14 +130,6 @@ python app.py
 
 ## Configuration
 
-### Frontend Environment Variables
-
-Create a `.env.local` file in the root directory:
-
-```env
-GEMINI_API_KEY=your_gemini_api_key_here
-```
-
 ### Backend Environment Variables
 
 Create a `.env` file in the `backend/` directory:
@@ -193,7 +176,6 @@ biotranscribe/
 │   └── Translator.tsx
 ├── services/
 │   ├── bioService.ts       # DNA/RNA/Protein conversion logic
-│   ├── geminiService.tsx   # Google Gemini AI integration
 │   └── storageService.ts   # History storage (API/LocalStorage)
 ├── App.tsx                 # Main app component
 ├── constants.ts            # Genetic code constants
@@ -218,8 +200,7 @@ biotranscribe/
    - Transcribe DNA to RNA
    - Translate RNA to protein
    - Display the results with visualizations
-4. Click **Analyze with AI** to get protein structure and function predictions
-5. Save your work to history for later reference
+4. Save your work to history for later reference
 
 ## Contributing
 
@@ -238,7 +219,6 @@ This project is licensed under the MIT License.
 ## Acknowledgments
 
 - Built with [React](https://react.dev/) and [Vite](https://vitejs.dev/)
-- AI analysis powered by [Google Gemini](https://deepmind.google/technologies/gemini/)
 - Genetic code data based on the standard codon table
 
 ## Support
