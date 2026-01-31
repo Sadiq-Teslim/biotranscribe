@@ -6,9 +6,11 @@ import { HistoryRecord } from '../types';
 const USE_BACKEND = true;
 
 // 2. API URL Configuration
-// WHEN RUNNING LOCALLY: Use 'http://localhost:5000/api'
-// WHEN DEPLOYING TO NETLIFY: Replace with your Render Backend URL (e.g., 'https://bio-backend.onrender.com/api')
-const API_URL = 'http://localhost:5000/api';
+// Automatically detects if running locally or on Netlify
+// If on localhost, use local backend. Otherwise, use Render backend.
+const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'http://localhost:5000/api'
+  : 'https://biotranscribe-api.onrender.com/api';
 // ---------------------------------------------------------------------------
 
 const STORAGE_KEY = 'biotranscribe_history_v1';
