@@ -13,9 +13,26 @@ export const History: React.FC = () => {
   // Load data asynchronously to support both LocalStorage and Python Backend
   const loadData = async () => {
     setLoading(true);
-    const data = await fetchHistoryAsync();
-    setRecords(data);
-    setLoading(false);
+    try {
+      const data = await fetchHistoryAsync();
+      // Normalize data from backend (snake_case to camelCase) and ensure all fields exist
+      const normalizedData = data.map((record: any) => ({
+        id: record.id || '',
+        name: record.name || 'Untitled',
+        date: record.date || new Date().toISOString(),
+        type: record.type || 'DNA',
+        inputSequence: record.input_sequence || record.inputSequence || '',
+        rnaSequence: record.rna_sequence || record.rnaSequence || '',
+        proteinSequenceString: record.protein_sequence || record.proteinSequenceString || '',
+        aiAnalysis: record.ai_analysis || record.aiAnalysis || null,
+      }));
+      setRecords(normalizedData);
+    } catch (error) {
+      console.error('Error loading history:', error);
+      setRecords([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -24,31 +41,23 @@ export const History: React.FC = () => {
 
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    try {
-      const success = await deleteRecord(id);
-      if (success) {
-        // Optimistically update UI
-        const updated = records.filter(r => r.id !== id);
-        setRecords(updated);
-        // Reload to ensure sync with backend
-        await loadData();
-      } else {
-        console.error('Failed to delete record');
-        // Reload to sync with backend state
-        await loadData();
-      }
-    } catch (error) {
-      console.error('Error deleting record:', error);
-      // Reload to sync with backend state
-      await loadData();
-    }
+    // In a real app, deleteRecord should probably return a promise
+    deleteRecord(id);
+    // Wait a bit for DB update or optimistically update UI
+    const updated = records.filter(r => r.id !== id);
+    setRecords(updated);
+    // Optionally reload to ensure sync
+    // await loadData();
   };
 
-  const filteredRecords = records.filter(r => 
-    r.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    r.rnaSequence.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    r.proteinSequenceString.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredRecords = records.filter(r => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      (r.name || '').toLowerCase().includes(searchLower) ||
+      (r.rnaSequence || '').toLowerCase().includes(searchLower) ||
+      (r.proteinSequenceString || '').toLowerCase().includes(searchLower)
+    );
+  });
 
   const toggleExpand = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
@@ -59,7 +68,7 @@ export const History: React.FC = () => {
       <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-6">
         <div>
           <h1 className="text-3xl font-extrabold text-slate-900">Translation History</h1>
-          <p className="text-slate-500 mt-2">Access your saved sequences and translation history.</p>
+          <p className="text-slate-500 mt-2">Access your saved sequences and AI insights.</p>
         </div>
         
         <div className="relative w-full md:w-80">
@@ -103,7 +112,7 @@ export const History: React.FC = () => {
                       <h3 className="font-bold text-slate-900 truncate text-lg">{record.name}</h3>
                       <div className="flex items-center gap-4 text-xs font-medium text-slate-500 mt-1">
                         <span className="flex items-center gap-1.5"><Clock size={14} /> {new Date(record.date).toLocaleDateString()}</span>
-                        <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-600">{record.proteinSequenceString.length} AA</span>
+                        <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-600">{(record.proteinSequenceString || '').length} AA</span>
                       </div>
                     </div>
                   </div>
@@ -135,13 +144,13 @@ export const History: React.FC = () => {
                           <div>
                             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Original Sequence</h4>
                             <div className="font-mono text-xs break-all bg-white p-4 rounded-xl border border-slate-200 text-slate-600 shadow-sm">
-                              {record.inputSequence}
+                              {record.inputSequence || 'N/A'}
                             </div>
                           </div>
                           <div>
                             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Protein Sequence</h4>
                             <div className="font-mono text-xs break-all bg-white p-4 rounded-xl border border-slate-200 text-primary shadow-sm">
-                              {record.proteinSequenceString}
+                              {record.proteinSequenceString || 'N/A'}
                             </div>
                           </div>
                         </div>

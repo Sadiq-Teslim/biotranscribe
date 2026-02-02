@@ -60,7 +60,7 @@ export const Home: React.FC = () => {
             transition={{ delay: 0.2, duration: 0.6 }}
             className="text-xl text-slate-500 max-w-2xl mx-auto mb-12 leading-relaxed"
           >
-            A powerful interface for the Central Dogma. Convert DNA to RNA and translate genetic sequences into proteins with real-time visualization.
+            An intelligent interface for the Central Dogma. Convert DNA to RNA and translate genetic sequences into proteins with real-time visualization.
           </motion.p>
           
           <motion.div 
@@ -106,8 +106,8 @@ export const Home: React.FC = () => {
           <FeatureCard 
             delay={0.6}
             icon={<Database size={28} />}
-            title="History Management"
-            desc="Save and manage your transcription and translation records. Access your previous work anytime with persistent storage."
+            title="AI Analysis"
+            desc="Leverage Google Gemini to predict protein structure, function, and physicochemical properties from your sequences."
           />
         </div>
       </section>

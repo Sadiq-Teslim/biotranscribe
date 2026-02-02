@@ -6,25 +6,11 @@ import { HistoryRecord } from '../types';
 const USE_BACKEND = true;
 
 // 2. API URL Configuration
-// Automatically detects if running locally or in production
-// Uses environment variable if set, otherwise auto-detects based on hostname
-const getApiUrl = (): string => {
-  // Check for environment variable first (set in vite.config.ts)
-  const envApiUrl = import.meta.env.VITE_API_URL;
-  if (envApiUrl) {
-    return envApiUrl;
-  }
-
-  // Auto-detect based on hostname
-  const hostname = window.location.hostname;
-  const isLocal = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '';
-
-  return isLocal
-    ? 'http://localhost:5000/api'
-    : 'https://biotranscribe-api.onrender.com/api'; // Default production URL
-};
-
-const API_URL = getApiUrl();
+// Automatically detects if running locally or on Netlify
+// If on localhost, use local backend. Otherwise, use Render backend.
+const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'http://localhost:5000/api'
+  : 'https://biotranscribe-api.onrender.com/api';
 // ---------------------------------------------------------------------------
 
 const STORAGE_KEY = 'biotranscribe_history_v1';
@@ -126,12 +112,12 @@ export const saveRecord = (record: Omit<HistoryRecord, 'id' | 'date'>) => {
   return saveRecordLocal(record);
 };
 
-export const deleteRecord = async (id: string): Promise<boolean> => {
+export const deleteRecord = (id: string) => {
   if (USE_BACKEND) {
-    return await deleteRecordAPI(id);
+    deleteRecordAPI(id);
+    return;
   }
   deleteRecordLocal(id);
-  return true;
 };
 
 export const clearHistory = () => {
